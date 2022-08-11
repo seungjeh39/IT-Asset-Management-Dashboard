@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>IT Asset Management Table</title>
+
+    <style>
+
+        h1 {
+            font:30px Helvetica;
+            color:#0000CD;
+            text-align: center;
+        }
+        caption {
+            font:17px Helvetica;
+            font-weight:bold;
+        }
+        th, td, p, input {
+            font:14px Helvetica;
+        }
+        table, th, td {
+            border: solid 1px #DDD;
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: left;
+        }
+        .container {
+            width: 1800px;
+            display: flex;
+            margin: 0 auto;
+            justify-content: space-between;
+        }
+        .tableTitle {
+            width: 1600px;
+            display: flex;
+            margin: 0 auto;
+            justify-content: space-between;
+        }
+        th {
+            font-weight:bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    
+    </style>
+
+</head>
+
+
+<script>
+
+    async function CreateTableFromJSON(category) {
+
+        // Read JSON data from web api
+        async function fetchText() {
+
+            var url = "https://localhost:99999/api/________/" + category;
+            try {
+                var res = await fetch(url);
+                //var res = await fetch(url, {mode: 'no-cors'});
+                return await res.json();
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        var ITAsset = await fetchText();
+        console.log(ITAsset);
+
+        // Extract value for HTML header
+        var col = [];
+        for (var i = 0; i < ITAsset.length; i++) {
+            for (var key in ITAsset[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+
+        // Create dynamic table
+        var table = document.createElement("table");
+
+        // Create title for the table
+        var caption = table.createCaption();
+        caption.textContent = category;
+
+        // Create HTML table header row using the extracted headers above
+        var tr = table.insertRow(-1); // Table row
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th"); // Table header
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+        // Add JSON data to the table as rows
+        for (var i = 0; i < ITAsset.length; i++) {
+            tr = table.insertRow(-1);
+
+            for (var j = 0; j < col.length; j++) {
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = ITAsset[i][col[j]];
+            }
+        }
+
+        // Add the newly created table with JSON data to a container
+        var containerId = "showData" + category;
+        var divContainer = document.getElementById(containerId);
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+    }
+
+</script>
+
+
+<body>
+
+    <h1>IT Asset Management Table</h1>
+    <div class="container">
+
+        <div id="showDataComputer">
+            <script>
+                CreateTableFromJSON('Computer');
+            </script>
+        </div>
+
+        <div id="showDataLaptop">
+            <script>
+                CreateTableFromJSON('Laptop');
+            </script>
+        </div>
+
+        <div id="showDataPhone">
+            <script>
+                CreateTableFromJSON('Phone');
+            </script>
+        </div>
+
+        <div id="showDataTablet">
+            <script>
+                CreateTableFromJSON('Tablet');
+            </script>
+        </div>
+
+        <div id="showDataTV">
+            <script>
+                CreateTableFromJSON('TV');
+            </script>
+        </div>
+
+        <div id="showDataOther">
+            <script>
+                CreateTableFromJSON('Other');
+            </script>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+
